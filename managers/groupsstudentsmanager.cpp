@@ -90,7 +90,7 @@ void GroupsStudentsManager::update_students() {
     }
 
     QSqlQuery q(db);
-    q.prepare("SELECT id, id_groups, name, first_name, comments FROM students WHERE id_groups=:id_groups ORDER BY name, first_name");
+    q.prepare("SELECT id, id_groups, name, first_name FROM students WHERE id_groups=:id_groups ORDER BY name, first_name");
     q.bindValue(":id_groups", g->id());
     q.exec();
 
@@ -101,7 +101,6 @@ void GroupsStudentsManager::update_students() {
         s->setId_groups(q.value(1).toInt());
         s->setName(q.value(2).toString());
         s->setFirst_name(q.value(3).toString());
-        s->setComments(q.value(4).toString());
 
         QListWidgetItem *item = new QListWidgetItem(s->name() + " " + s->first_name(), ui->list_students);
         item->setData(Qt::UserRole, (qulonglong) s);

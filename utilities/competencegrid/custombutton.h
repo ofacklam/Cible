@@ -1,22 +1,21 @@
 #ifndef CUSTOMBUTTON_H
 #define CUSTOMBUTTON_H
 
-#include <QToolButton>
+#include <QRadioButton>
 #include <QTextDocument>
 #include <QResizeEvent>
 #include <QPainter>
 
-class CustomButton : public QToolButton
+class CustomButton : public QRadioButton
 {
 public:
-    CustomButton();
-    void setHtml(QString html);
-    void updateHtml();
-    void resizeEvent(QResizeEvent *e);
-    QSize sizeHint();
+    CustomButton(QString text, int value, int id_comp);
+    int value();
+    int id_comp();
 
 private:
-    QString m_html;
+    int m_value;
+    int m_id_comp;
 };
 
 #endif // CUSTOMBUTTON_H

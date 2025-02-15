@@ -22,10 +22,6 @@ QString Student::first_name() {
     return m_first_name;
 }
 
-QString Student::comments() {
-    return m_comments;
-}
-
 void Student::setId(int id) {
     m_id = id;
 }
@@ -40,8 +36,4 @@ void Student::setName(QString name) {
 
 void Student::setFirst_name(QString first_name) {
     m_first_name = first_name;
-}
-
-void Student::setComments(QString comments) {
-    m_comments = comments;
 }

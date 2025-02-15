@@ -14,6 +14,7 @@
 #include "utilities/radar.h"
 #include "simpleword.h"
 #include "custombutton.h"
+#include "customlabel.h"
 
 class MainWindow;
 class Radar;
@@ -27,21 +28,24 @@ class CompetenceGrid : public QWidget
     Q_OBJECT
 
 public:
-    explicit CompetenceGrid(Student *s, QList<Domain*> domains, Radar *radar, QWidget *parent = 0);
+    explicit CompetenceGrid(Student *s, Page *p, Tab *t, QWidget *parent = 0);
     ~CompetenceGrid();
     void addHSep(int row, int column, int span);
     void addVSep(int row, int column, int span);
 
 public slots:
-    void buttonClicked(int id);
-    void textClicked(QAbstractButton *btn);
-    void studentCommentClicked(QAbstractButton *btn);
+    void buttonClicked(QAbstractButton *btn);
+    void textClicked(CustomLabel *lbl);
+    void tabCommentClicked(CustomLabel *lbl);
+
+signals:
+    void valuesUpdated();
 
 private:
     Ui::CompetenceGrid *ui;
-    Radar *m_radar;
-    QList<Domain*> m_domains;
     Student *m_student;
+    Page *m_page;
+    Tab *m_tab;
 };
 
 #endif // COMPETENCEGRID_H

@@ -3,20 +3,15 @@
 Domain::Domain()
 {
     m_id = 0;
-    m_id_students = 0;
-    m_part = 0;
+    m_id_pages = 0;
 }
 
 int Domain::id() {
     return m_id;
 }
 
-int Domain::part() {
-    return m_part;
-}
-
-int Domain::id_students() {
-    return m_id_students;
+int Domain::id_pages() {
+    return m_id_pages;
 }
 
 QString Domain::name() {
@@ -27,12 +22,8 @@ void Domain::setId(int id) {
     m_id = id;
 }
 
-void Domain::setPart(int part) {
-    m_part = part;
-}
-
-void Domain::setId_students(int id_students) {
-    m_id_students = id_students;
+void Domain::setId_pages(int id_pages) {
+    m_id_pages = id_pages;
 }
 
 void Domain::setName(QString name) {

@@ -97,34 +97,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <layout class="QVBoxLayout" name="layout_competence" stretch="1,1,2">
-        <item>
-         <widget class="QComboBox" name="GroupsBox"/>
-        </item>
-        <item>
-         <widget class="QListWidget" name="StudentsList"/>
-        </item>
-        <item>
-         <widget class="QScrollArea" name="scrollArea">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>367</width>
-             <height>234</height>
-            </rect>
-           </property>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </item>
+     <layout class="QHBoxLayout" name="mainContainer" stretch="1">
       <item>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>

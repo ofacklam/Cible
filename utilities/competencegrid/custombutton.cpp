@@ -1,40 +1,15 @@
 #include "custombutton.h"
 
-CustomButton::CustomButton() : QToolButton()
+CustomButton::CustomButton(QString text, int value, int id_comp) : QRadioButton(text)
 {
-    setMinimumSize(0, 0);
-    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    setAutoRaise(true);
-    //resize(0, 0);
+    m_value = value;
+    m_id_comp = id_comp;
 }
 
-void CustomButton::setHtml(QString html) {
-    m_html = html;
-    updateHtml();
+int CustomButton::value() {
+    return m_value;
 }
 
-void CustomButton::updateHtml() {
-    QTextDocument doc;
-    doc.setHtml(m_html);
-    if(doc.toPlainText() == "")
-        doc.setHtml("Cliquer ici pour ajouter une appréciation ou des objectifs...");
-    doc.setTextWidth(0.95 * width());
-
-    QPixmap pic(doc.size().width(), doc.size().height());
-    pic.fill(Qt::transparent);
-    QPainter painter(&pic);
-    doc.drawContents(&painter, pic.rect());
-
-    QIcon icon(pic);
-    setIcon(icon);
-    setIconSize(pic.rect().size());
-}
-
-void CustomButton::resizeEvent(QResizeEvent *e) {
-    updateHtml();
-    return QToolButton::resizeEvent(e);
-}
-
-QSize CustomButton::sizeHint() {
-    return QSize(0, 0);
+int CustomButton::id_comp() {
+    return m_id_comp;
 }

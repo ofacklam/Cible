@@ -41,7 +41,12 @@ SOURCES += main.cpp\
     managers/competencemanager/competenceaction.cpp \
     managers/competencemanager/competencecell.cpp \
     managers/studentsimportmanager.cpp \
-    utilities/pdfcreator.cpp
+    utilities/pdfcreator.cpp \
+    utilities/leftpane.cpp \
+    storedData/page.cpp \
+    storedData/tab.cpp \
+    utilities/competencetabwidget.cpp \
+    utilities/competencegrid/customlabel.cpp
 
 HEADERS  += mainwindow.h \
     storedData/student.h \
@@ -60,7 +65,12 @@ HEADERS  += mainwindow.h \
     managers/competencemanager/competenceaction.h \
     managers/competencemanager/competencecell.h \
     managers/studentsimportmanager.h \
-    utilities/pdfcreator.h
+    utilities/pdfcreator.h \
+    utilities/leftpane.h \
+    storedData/page.h \
+    storedData/tab.h \
+    utilities/competencetabwidget.h \
+    utilities/competencegrid/customlabel.h
 
 FORMS    += mainwindow.ui \
     managers/groupsstudentsmanager.ui \
@@ -68,14 +78,16 @@ FORMS    += mainwindow.ui \
     utilities/competencegrid/competencegrid.ui \
     utilities/competencegrid/simpleword.ui \
     managers/competencemanager/competencemanager.ui \
-    managers/competencemanager/competencecell.ui
+    managers/competencemanager/competencecell.ui \
+    utilities/leftpane.ui \
+    utilities/competencetabwidget.ui
 
 DISTFILES +=
 
 RESOURCES += \
     cible.qrc
 
-VERSION = 1.0
+VERSION = 2.0
 DEFINES += "APP_VERSION='$$VERSION'"
 QMAKE_TARGET_PRODUCT = "CIBLE\0"
 

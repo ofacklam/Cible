@@ -1,22 +1,17 @@
 #include "competencegrid.h"
 #include "ui_competencegrid.h"
 
-CompetenceGrid::CompetenceGrid(Student *s, QList<Domain *> domains, Radar *radar, QWidget *parent) :
+CompetenceGrid::CompetenceGrid(Student *s, Page *p, Tab *t, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::CompetenceGrid)
 {
     ui->setupUi(this);
 
-    if(s == NULL)
+    if(s == NULL || p == NULL || t == NULL)
         return;
 
-    if(domains.length() != DOMAIN_COUNT) {
-        QMessageBox::critical(NULL, "Erreur fatale", "Mauvais nombre de domaines.");
-        return;
-    }
-
-    m_radar = radar;
-    m_domains = domains;
+    m_tab = t;
+    m_page = p;
     m_student = s;
 
     //Student name
@@ -52,13 +47,10 @@ CompetenceGrid::CompetenceGrid(Student *s, QList<Domain *> domains, Radar *radar
     addHSep(4, 0, CIRCLES_COUNT + 8);
 
     //For each domain
-    QButtonGroup *comment_group = new QButtonGroup(this);
-    connect(comment_group, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(textClicked(QAbstractButton*)));
-
     int offset = 2;
     int domainrow = offset + 3;
-    for(int i = 0; i < domains.length(); i++) {
-        Domain *d = domains[i];
+    for(int i = 0; i < p.length(); i++) {
+        Domain *d = p[i];
         QList<Competence *> comps = d->competences();
         //Name of domain
         ui->gridLayout->addWidget(new QLabel(d->name()), domainrow, 1, std::max(1, 2 * comps.length()), 1, Qt::AlignVCenter);
@@ -73,25 +65,25 @@ CompetenceGrid::CompetenceGrid(Student *s, QList<Domain *> domains, Radar *radar
             QButtonGroup *group = new QButtonGroup(this);
 
             for(int k = 1; k <= CIRCLES_COUNT; k++) {
-                QRadioButton *b = new QRadioButton(QString::number(k));
-                group->addButton(b, j * 100 + i * 10 + k);
+                CustomButton *b = new CustomButton(QString::number(k), k, c->id());
+                group->addButton(b, k);
                 ui->gridLayout->addWidget(b, domainrow, 5 + (k-1), Qt::AlignHCenter);
             }
-            QRadioButton *special = new QRadioButton("NE");
-            group->addButton(special, j * 100 + i * 10);
+            CustomButton *special = new CustomButton("NE", 0, c->id());
+            group->addButton(special, 0);
             ui->gridLayout->addWidget(special, domainrow, CIRCLES_COUNT + 5, Qt::AlignHCenter);
 
-            QAbstractButton *toCheck = group->button(j *100 + i * 10 + c->value());
+            QAbstractButton *toCheck = group->button(t->value(c->id()));
             if(toCheck != NULL)
                 toCheck->click();
 
-            connect(group, SIGNAL(buttonClicked(int)), this, SLOT(buttonClicked(int)));
+            connect(group, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
 
             //Add comments
-            CustomButton *btn_comment = new CustomButton();
-            btn_comment->setHtml(c->comments());
-            comment_group->addButton(btn_comment, j * 10 + i);
-            ui->gridLayout->addWidget(btn_comment, domainrow, 6 + CIRCLES_COUNT);
+            CustomLabel *lbl_comment = new CustomLabel(c->id());
+            lbl_comment->setText(t->comment(c->id()));
+            connect(lbl_comment, SIGNAL(clicked(CustomLabel*)), this, SLOT(textClicked(CustomLabel*)));
+            ui->gridLayout->addWidget(lbl_comment, domainrow, 6 + CIRCLES_COUNT);
 
             addHSep(domainrow + 1, 2, CIRCLES_COUNT + 6);
         }
@@ -108,12 +100,10 @@ CompetenceGrid::CompetenceGrid(Student *s, QList<Domain *> domains, Radar *radar
 
     //General comment box
     ui->gridLayout->addWidget(new QLabel("Appréciation générale : "), domainrow, 1, 1, 3);
-    CustomButton *custombutton = new CustomButton();
-    custombutton->setHtml(m_student->comments());
-    QButtonGroup *group = new QButtonGroup(this);
-    group->addButton(custombutton);
-    connect(group, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(studentCommentClicked(QAbstractButton*)));
-    ui->gridLayout->addWidget(custombutton, domainrow, 5, 1, CIRCLES_COUNT + 2);
+    CustomLabel *customlabel = new CustomLabel(-1);
+    customlabel->setText(m_tab->comments());
+    connect(customlabel, SIGNAL(clicked(CustomLabel*)), this, SLOT(tabCommentClicked(CustomLabel*)));
+    ui->gridLayout->addWidget(customlabel, domainrow, 5, 1, CIRCLES_COUNT + 2);
     addHSep(domainrow + 1, 0, CIRCLES_COUNT + 8);
     domainrow += 2;
 
@@ -144,15 +134,13 @@ void CompetenceGrid::addVSep(int row, int column, int span) {
     ui->gridLayout->addWidget(f, row, column, span, 1);
 }
 
-void CompetenceGrid::buttonClicked(int id) {
-    int value = id % 10;
-    int index_dom = (id / 10) % 10;
-    int index_comp = (id / 100);
+void CompetenceGrid::buttonClicked(QAbstractButton *btn) {
+    CustomButton *c_btn = (CustomButton *) btn;
+    int value = c_btn->value();
+    int id_comp = c_btn->id_comp();
 
     //Update value in local variables
-    QList<Competence*> comps = m_domains[index_dom]->competences();
-    Competence *c = comps[index_comp];
-    c->setValue(value);
+    m_tab->insertValue(id_comp, value);
 
     //Update value in DB
     QSqlDatabase db = QSqlDatabase::database();
@@ -162,29 +150,26 @@ void CompetenceGrid::buttonClicked(int id) {
     }
 
     QSqlQuery q(db);
-    q.prepare("UPDATE competences SET value=:value WHERE id=:id");
-    q.bindValue(":id", c->id());
-    q.bindValue(":value", c->value());
+    q.prepare("UPDATE values SET `value`=:value WHERE id_competences=:id_competences AND id_tabs=:id_tabs");
+    q.bindValue(":id_competences", id_comp);
+    q.bindValue(":id_tabs", m_tab->id());
+    q.bindValue(":value", value);
     q.exec();
 
     //Update visuals
-    m_radar->updateScreen();
+    emit valuesUpdated();
 }
 
-void CompetenceGrid::textClicked(QAbstractButton *btn) {
-    int id = btn->group()->id(btn);
-    int index_dom = id % 10;
-    int index_comp = id / 10;
-
-    Competence *c = m_domains[index_dom]->competences().at(index_comp);
+void CompetenceGrid::textClicked(CustomLabel *lbl) {
+    int id_comp = lbl->id_comp();
 
     SimpleWord editor;
-    editor.setText(c->comments());
+    editor.setText(m_tab->comment(id_comp));
     if(editor.exec() == QDialog::Accepted) {
         QString text = editor.text();
 
         //Update locally
-        c->setComments(text);
+        m_tab->insertComment(id_comp, text);
 
         //Update in DB
         QSqlDatabase db = QSqlDatabase::database();
@@ -194,24 +179,25 @@ void CompetenceGrid::textClicked(QAbstractButton *btn) {
         }
 
         QSqlQuery q(db);
-        q.prepare("UPDATE competences SET comments=:text WHERE id=:id");
-        q.bindValue(":id", c->id());
-        q.bindValue(":text", c->comments());
+        q.prepare("UPDATE values SET comments=:text WHERE id_competences=:id_competences AND id_tabs=:id_tabs");
+        q.bindValue(":id_competences", id_comp);
+        q.bindValue(":id_tabs", m_tab->id());
+        q.bindValue(":text", text);
         q.exec();
 
         //Update visuals
-        ((CustomButton*) btn)->setHtml(c->comments());
+        lbl->setText(text);
     }
 }
 
-void CompetenceGrid::studentCommentClicked(QAbstractButton *btn) {
+void CompetenceGrid::tabCommentClicked(CustomLabel *lbl) {
     SimpleWord editor;
-    editor.setText(m_student->comments());
+    editor.setText(m_tab->comments());
     if(editor.exec() == QDialog::Accepted) {
         QString text = editor.text();
 
         //Update locally
-        m_student->setComments(text);
+        m_tab->setComments(text);
 
         //Update in DB
         QSqlDatabase db = QSqlDatabase::database();
@@ -221,12 +207,12 @@ void CompetenceGrid::studentCommentClicked(QAbstractButton *btn) {
         }
 
         QSqlQuery q(db);
-        q.prepare("UPDATE students SET comments=:text WHERE id=:id");
-        q.bindValue(":id", m_student->id());
-        q.bindValue(":text", m_student->comments());
+        q.prepare("UPDATE tabs SET comments=:text WHERE id=:id");
+        q.bindValue(":id", m_tab->id());
+        q.bindValue(":text", m_tab->comments());
         q.exec();
 
         //Update visuals
-        ((CustomButton*) btn)->setHtml(m_student->comments());
+        lbl->setText(m_tab->comments());
     }
 }

@@ -25,8 +25,10 @@ public:
     ~KScopeManager();
     bool createFile(QString path);
     bool openFile(QString path);
+    QString getOldVersion(QSqlDatabase* db);
     int checkDBStructure(QSqlDatabase* db);
     int tablesStructures(QSqlDatabase* db, QString nameTable, ActionType action);
+    void upgradeFile(QString old_version, QSqlDatabase *db);
 
 private:
     QStringList tables;

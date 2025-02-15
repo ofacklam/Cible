@@ -10,12 +10,10 @@ class Domain
 public:
     Domain();
     int id();
-    int part();
-    int id_students();
+    int id_pages();
     QString name();
     void setId(int id);
-    void setPart(int part);
-    void setId_students(int id_students);
+    void setId_pages(int id_pages);
     void setName(QString name);
     QList<Competence*> competences(); //Extra
     void add_competence(Competence *c); //Extra
@@ -24,8 +22,7 @@ public:
 
 private:
     int m_id;
-    int m_part;
-    int m_id_students;
+    int m_id_pages;
     QString m_name;
     QList<Competence*> m_competences; //Extra
 };

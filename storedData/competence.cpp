@@ -19,13 +19,13 @@ QString Competence::name() {
     return m_name;
 }
 
-int Competence::value() {
+/*int Competence::value() {
     return m_value;
 }
 
 QString Competence::comments() {
     return m_comments;
-}
+}*/
 
 void Competence::setId(int id) {
     m_id = id;
@@ -39,10 +39,10 @@ void Competence::setName(QString name) {
     m_name = name;
 }
 
-void Competence::setValue(int value) {
+/*void Competence::setValue(int value) {
     m_value = value;
 }
 
 void Competence::setComments(QString comments) {
     m_comments = comments;
-}
+}*/

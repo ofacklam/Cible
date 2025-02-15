@@ -12,14 +12,12 @@
 #include "utilities/radar.h"
 #include "utilities/competencegrid/competencegrid.h"
 #include "utilities/pdfcreator.h"
+#include "utilities/leftpane.h"
 #include "aboutdialog.h"
 #include "storedData/group.h"
 #include "storedData/student.h"
 
-#define DOMAIN_COUNT 4
 #define CIRCLES_COUNT 4
-
-enum AffectedStudent {All, OneGroup, OneStudent, Cancel};
 
 namespace Ui {
 class MainWindow;
@@ -33,12 +31,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void updateWindow();
-    void updateGroupsBox();
-    void free_groups();
-    void free_students();
-    AffectedStudent question_affected(QString title, QString text, Student *s, Group *g);
-    bool printClass(QString dirname, QString group_name);
-    bool printAll(QString dirname);
 
 public slots:
     void createFile();
@@ -47,18 +39,11 @@ public slots:
     void openGroupsStudentsManager();
     void openCompetenceManager();
     void openAboutDialog();
-    void updateStudentsList();
-    void updateRadar();
-    void printCompetences();
-    void resetCompetences();
-
 
 private:
     Ui::MainWindow *ui;
     KScopeManager kscopemanager;
-    QQueue<Group*> m_displayedGroups;
-    QQueue<Student*> m_displayedStudents;
-
+    LeftPane *m_leftPane;
 };
 
 #endif // MAINWINDOW_H

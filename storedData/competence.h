@@ -10,13 +10,13 @@ public:
     int id();
     int id_domains();
     QString name();
-    int value();
-    QString comments();
+    //int value();
+    //QString comments();
     void setId(int id);
     void setId_domains(int id_domains);
     void setName(QString name);
-    void setValue(int value);
-    void setComments(QString comments);
+    //void setValue(int value);
+    //void setComments(QString comments);
 
 private:
     int m_id;
